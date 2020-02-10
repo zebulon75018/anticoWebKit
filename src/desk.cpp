@@ -154,21 +154,25 @@ void Desk::init()
     dbus_interface->connection().connect("org.freedesktop.Hal", "/org/freedesktop/Hal/Manager", "org.freedesktop.Hal.Manager", "DeviceRemoved", this, SLOT(device_removed(const QString &)));
 
     //QHBoxLayout *layout = new QHBoxLayout;
+    // Do QTimer::singleShot(0,this,SLOT(createWebView());
     layout = new QVBoxLayout;
     this->setLayout(layout);
-    view = new QWebView(this);
-
-    //view->page()->mainFrame()->addToJavaScriptWindowObject("myoperations", this);
-    //view->setUrl(QUrl("http://localhost/test/test/"));
-    view->setUrl(QUrl("file:///home/pi/html/pages/index.html"));
-    layout->addWidget(view);
-    connect(view, SIGNAL(loadFinished(bool )), this, SLOT(loadHtmlFinished(bool)));
-
+    QTimer::singleShot(1,this,SLOT(createWebView()));
     keyboard = new KeyBoard(view,this);
     //keyboard->setText("KeyBoard " );
     layout->addWidget(keyboard);
     keyboard->hide();
 
+}
+void Desk::createWebView() {
+    qDebug() << "createWebView ";
+    view = new QWebView(this);
+    view->page()->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+    //view->page()->mainFrame()->addToJavaScriptWindowObject("myoperations", this);
+    view->setUrl(QUrl("http://localhost:8080/index.html"));
+    //view->setUrl(QUrl("file:///home/pi/html/pages/index.html")); 
+    layout->addWidget(view);
+    connect(view, SIGNAL(loadFinished(bool )), this, SLOT(loadHtmlFinished(bool)));
 }
 
 void Desk::mousePressEvent(QMouseEvent *event)
